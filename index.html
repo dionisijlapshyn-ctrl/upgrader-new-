@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CS2 Upgrader & Clicker PRO</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: #090d16;
+      color: #f1f5f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 15px;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Анимированный фоновый градиент */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 50% 50%, rgba(56, 189, 248, 0.08), rgba(244, 63, 94, 0.05), transparent 60%);
+      z-index: -1;
+      animation: pulseBg 12s infinite alternate ease-in-out;
+    }
+
+    @keyframes pulseBg {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.1); }
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 950px;
+      margin-bottom: 25px;
+    }
+
+    .title {
+      font-size: 2.2rem;
+      font-weight: 900;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, #38bdf8, #818cf8, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 10px 20px rgba(56, 189, 248, 0.2);
+    }
+
+    .sound-toggle {
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #cbd5e1;
+      font-size: 1.2rem;
+      padding: 8px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: all 0.2s;
+    }
+
+    .sound-toggle:hover {
+      background: rgba(51, 65, 85, 0.8);
+      color: #fff;
+    }
+
+    /* Верхняя панель баланса */
+    .balance-box {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 16px;
+      padding: 12px 28px;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #fbbf24;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 0 25px rgba(245, 158, 11, 0.15);
+      backdrop-filter: blur(10px);
+      margin-bottom: 25px;
+    }
+
+    .main-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 25px;
+      justify-content: center;
+      max-width: 950px;
+      width: 100%;
+    }
+
+    /* Карточки Секций */
+    .card {
+      background: rgba(15, 23, 42, 0.75);
+      border-radius: 24px;
+      padding: 25px;
+      flex: 1;
+      min-width: 310px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      position: relative;
+    }
+
+    .card h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #94a3b8;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Секция Кликера */
+    .coin-wrapper {
+      position: relative;
+      margin: auto 0;
+    }
+
+    .coin-btn {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #fbbf24, #d97706 60%, #78350f);
+      border: 6px solid #f59e0b;
+      font-size: 4.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 0 30px rgba(245, 158, 11, 0.3), inset 0 0 15px rgba(255, 255, 255, 0.5);
+      transition: transform 0.08s ease, box-shadow 0.2s ease;
+    }
+
+    .coin-btn:hover {
+      box-shadow: 0 0 40px rgba(245, 158, 11, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.7);
+    }
+
+    .coin-btn:active {
+      transform: scale(0.92);
+    }
+
+    /* Вылетающий +1 текст */
+    .plus-one {
+      position: absolute;
+      color: #fbbf24;
+      font-weight: 900;
+      font-size: 1.8rem;
+      pointer-events: none;
+      animation: floatUp 0.8s ease-out forwards;
+      text-shadow: 0 0 10px rgba(245, 158, 11, 0.8);
+    }
+
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-70px) scale(1.3); }
+    }
+
+    /* Апгрейдер Рулетка */
+    .wheel-container {
+      position: relative;
+      width: 220px;
+      height: 220px;
+      margin: 15px 0;
+    }
+
+    .wheel {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: conic-gradient(#10b981 0deg 108deg, #1e293b 108deg 360deg);
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(0, 0, 0, 0.5);
+      border: 4px solid #334155;
+      transition: background 0.2s ease;
+    }
+
+    .arrow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 4px;
+      height: 95px;
+      background: #f43f5e;
+      transform-origin: top center;
+      transform: rotate(0deg);
+      border-radius: 2px;
+      z-index: 2;
+    }
+
+    .arrow::after {
+      content: '';
+      position: absolute;
+      bottom: -12px;
+      left: -7px;
+      width: 0;
+      height: 0;
+      border-left: 9px solid transparent;
+      border-right: 9px solid transparent;
+      border-top: 14px solid #f43f5e;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+    }
+
+    .center-dot {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 24px;
+      height: 24px;
+      background: #f8fafc;
+      border-radius: 50%;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.8);
+      z-index: 3;
+      border: 3px solid #0f172a;
+    }
+
+    /* Управление ставкой */
+    .controls {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .input-field {
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 10px;
+      width: 100%;
+      font-size: 1rem;
+      outline: none;
+      font-weight: 600;
+    }
+
+    .btn-quick {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #94a3b8;
+      padding: 10px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.2s;
+    }
+
+    .btn-quick:hover {
+      background: #334155;
+      color: #fff;
+    }
+
+    .slider-box {
+      background: #0f172a;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #1e293b;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: #10b981;
+      cursor: pointer;
+    }
+
+    .payout-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      padding: 10px 14px;
+      border-radius: 10px;
+    }
+
+    .btn-upgrade {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff;
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(16, 185, 129, 0.25);
+      transition: transform 0.15s, box-shadow 0.15s, opacity 0.2s;
+    }
+
+    .btn-upgrade:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px rgba(16, 185, 129, 0.35);
+    }
+
+    .btn-upgrade:disabled {
+      background: #334155;
+      box-shadow: none;
+      cursor: not-allowed;
+      transform: none;
+      opacity: 0.6;
+    }
+
+    .status-msg {
+      margin-top: 10px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-align: center;
+      min-height: 22px;
+    }
+
+    .win { color: #10b981; }
+    .lose { color: #f43f5e; }
+
+    /* История игр */
+    .history-card {
+      width: 100%;
+      max-width: 950px;
+      margin-top: 20px;
+      padding: 20px;
+    }
+
+    .history-list {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 10px 0;
+      width: 100%;
+    }
+
+    .history-item {
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      white-space: nowrap;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .history-win {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+    }
+
+    .history-lose {
+      background: rgba(244, 63, 94, 0.2);
+      border: 1px solid rgba(244, 63, 94, 0.4);
+      color: #fb7185;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1 class="title">CS2 UPGRADER</h1>
+    <button class="sound-toggle" id="soundBtn" onclick="toggleSound()">🔊</button>
+  </header>
+
+  <div class="balance-box">
+    🪙 <span id="balance">10</span> монет
+  </div>
+
+  <div class="main-container">
+    <!-- КЛИКЕР -->
+    <div class="card">
+      <h2>Кликер</h2>
+      <div class="coin-wrapper" id="coinWrapper">
+        <div class="coin-btn" id="clickBtn">🪙</div>
+      </div>
+      <p style="color: #64748b; font-size: 0.85rem; margin-top: 20px;">Кликай, чтобы подзаработать монет</p>
+    </div>
+
+    <!-- АПГРЕЙДЕР -->
+    <div class="card">
+      <h2>Апгрейдер</h2>
+
+      <div class="wheel-container">
+        <div class="wheel" id="wheel"></div>
+        <div class="center-dot"></div>
+        <div class="arrow" id="arrow"></div>
+      </div>
+
+      <div class="controls">
+        <div>
+          <label style="font-size: 0.85rem; color: #94a3b8; display: block; margin-bottom: 5px;">Ставка:</label>
+          <div class="input-row">
+            <input type="number" id="betInput" class="input-field" value="2" min="1">
+            <button class="btn-quick" onclick="adjustBet(0.5)">/2</button>
+            <button class="btn-quick" onclick="adjustBet(2)">x2</button>
+            <button class="btn-quick" onclick="setMaxBet()">MAX</button>
+          </div>
+        </div>
+
+        <div class="slider-box">
+          <div class="slider-header">
+            <span>Шанс победы</span>
+            <strong id="chanceValue" style="color: #10b981;">30%</strong>
+          </div>
+          <input type="range" id="chanceSlider" min="1" max="90" value="30">
+        </div>
+
+        <div class="payout-box">
+          <span style="font-size: 0.9rem; color: #94a3b8;">Возможный куш:</span>
+          <strong id="payoutValue" style="color: #fbbf24; font-size: 1.1rem;">+6 монет</strong>
+        </div>
+
+        <button class="btn-upgrade" id="spinBtn" onclick="startUpgrade()">КРУТИТЬ БАРАБАН</button>
+      </div>
+
+      <div class="status-msg" id="statusMsg"></div>
+    </div>
+  </div>
+
+  <!-- ИСТОРИЯ ИГР -->
+  <div class="card history-card">
+    <h2>История апгрейдов</h2>
+    <div class="history-list" id="historyList">
+      <span style="color: #64748b; font-size: 0.85rem;">Здесь будут отображаться ваши последние игры</span>
+    </div>
+  </div>
+
+  <script>
+    let coins = 10;
+    let isSpinning = false;
+    let soundEnabled = true;
+
+    // Web Audio API синтезатор звуков
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playSound(type) {
+      if (!soundEnabled) return;
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      const now = audioCtx.currentTime;
+
+      if (type === 'click') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, now);
+        osc.frequency.exponentialRampToValueAtTime(800, now + 0.05);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+        osc.start(now);
+        osc.stop(now + 0.05);
+      } else if (type === 'tick') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(120, now);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.03);
+        osc.start(now);
+        osc.stop(now + 0.03);
+      } else if (type === 'win') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(400, now);
+        osc.frequency.setValueAtTime(600, now + 0.1);
+        osc.frequency.setValueAtTime(900, now + 0.2);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+        osc.start(now);
+        osc.stop(now + 0.4);
+      } else if (type === 'lose') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(300, now);
+        osc.frequency.linearRampToValueAtTime(150, now + 0.25);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+        osc.start(now);
+        osc.stop(now + 0.25);
+      }
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      document.getElementById('soundBtn').innerText = soundEnabled ? '🔊' : '🔇';
+    }
+
+    // DOM Элементы
+    const balanceEl = document.getElementById('balance');
+    const clickBtn = document.getElementById('clickBtn');
+    const coinWrapper = document.getElementById('coinWrapper');
+    const betInput = document.getElementById('betInput');
+    const chanceSlider = document.getElementById('chanceSlider');
+    const chanceValue = document.getElementById('chanceValue');
+    const payoutValue = document.getElementById('payoutValue');
+    const wheel = document.getElementById('wheel');
+    const arrow = document.getElementById('arrow');
+    const spinBtn = document.getElementById('spinBtn');
+    const statusMsg = document.getElementById('statusMsg');
+    const historyList = document.getElementById('historyList');
+
+    // Клик по монете
+    clickBtn.addEventListener('click', (e) => {
+      coins++;
+      updateUI();
+      playSound('click');
+
+      // Анимация +1
+      const plusOne = document.createElement('div');
+      plusOne.className = 'plus-one';
+      plusOne.innerText = '+1';
+      plusOne.style.left = `${e.offsetX}px`;
+      plusOne.style.top = `${e.offsetY - 20}px`;
+      coinWrapper.appendChild(plusOne);
+
+      setTimeout(() => plusOne.remove(), 800);
+    });
+
+    // Настройки ставки и шанса
+    chanceSlider.addEventListener('input', updateCalculations);
+    betInput.addEventListener('input', updateCalculations);
+
+    function adjustBet(factor) {
+      let current = parseInt(betInput.value) || 1;
+      betInput.value = Math.max(1, Math.floor(current * factor));
+      updateCalculations();
+    }
+
+    function setMaxBet() {
+      betInput.value = Math.max(1, coins);
+      updateCalculations();
+    }
+
+    function updateCalculations() {
+      let bet = parseInt(betInput.value) || 1;
+      let chance = parseInt(chanceSlider.value);
+      
+      chanceValue.innerText = chance + '%';
+      
+      let multiplier = 100 / chance;
+      let winAmount = Math.floor(bet * multiplier);
+      payoutValue.innerText = '+' + winAmount + ' монет';
+
+      let degrees = (chance / 100) * 360;
+      wheel.style.background = `conic-gradient(#10b981 0deg ${degrees}deg, #1e293b ${degrees}deg 360deg)`;
+    }
+
+    function updateUI() {
+      balanceEl.innerText = coins;
+    }
+
+    function addHistory(isWin, text) {
+      if (historyList.children[0] && historyList.children[0].tagName === 'SPAN') {
+        historyList.innerHTML = '';
+      }
+      const item = document.createElement('div');
+      item.className = `history-item ${isWin ? 'history-win' : 'history-lose'}`;
+      item.innerText = text;
+      historyList.prepend(item);
+      if (historyList.children.length > 8) historyList.lastChild.remove();
+    }
+
+    // Запуск вращения
+    function startUpgrade() {
+      let bet = parseInt(betInput.value);
+      let chance = parseInt(chanceSlider.value);
+
+      if (isSpinning) return;
+      if (isNaN(bet) || bet <= 0) {
+        statusMsg.innerText = "Укажите правильную ставку!";
+        statusMsg.className = "status-msg lose";
+        return;
+      }
+      if (bet > coins) {
+        statusMsg.innerText = "Недостаточно монет!";
+        statusMsg.className = "status-msg lose";
+        return;
+      }
+
+      coins -= bet;
+      updateUI();
+      isSpinning = true;
+      spinBtn.disabled = true;
+      statusMsg.innerText = "Испытываем удачу...";
+      statusMsg.className = "status-msg";
+
+      let randomDegree = Math.floor(Math.random() * 360);
+      let totalRotation = 1800 + randomDegree;
+
+      // Эмуляция звуков щелчков крутящейся стрелки
+      let ticks = 0;
+      let maxTicks = 25;
+      let intervalSpeed = 50;
+
+      function playTickSequence() {
+        if (ticks < maxTicks) {
+          playSound('tick');
+          ticks++;
+          intervalSpeed += 8; // Замедление тиков
+          setTimeout(playTickSequence, intervalSpeed);
+        }
+      }
+      playTickSequence();
+
+      arrow.style.transition = "transform 3s cubic-bezier(0.12, 0.8, 0.2, 1)";
+      arrow.style.transform = `rotate(${totalRotation}deg)`;
+
+      setTimeout(() => {
+        let winDegree = (chance / 100) * 360;
+        let multiplier = 100 / chance;
+        let winAmount = Math.floor(bet * multiplier);
+
+        if (randomDegree <= winDegree) {
+          coins += winAmount;
+          statusMsg.innerText = `УСПЕХ! +${winAmount} монет!`;
+          statusMsg.className = "status-msg win";
+          playSound('win');
+          addHistory(true, `+${winAmount} (${chance}%)`);
+        } else {
+          statusMsg.innerText = `ПРОИГРЫШ (-${bet} монет)`;
+          statusMsg.className = "status-msg lose";
+          playSound('lose');
+          addHistory(false, `-${bet} (${chance}%)`);
+        }
+
+        setTimeout(() => {
+          arrow.style.transition = "none";
+          arrow.style.transform = `rotate(${randomDegree}deg)`;
+          isSpinning = false;
+          spinBtn.disabled = false;
+          updateUI();
+        }, 400);
+
+      }, 3000);
+    }
+
+    updateCalculations();
+  </script>
+</body>
+</html>
